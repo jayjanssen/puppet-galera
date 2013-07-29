@@ -11,14 +11,6 @@
 #  [*package_ensure*]      - Ensure state for package. Can be specified as version.
 #  [*galera_package_name*] - The name of the galera package.
 #  [*wsrep_package_name*]  - The name of the wsrep package.
-#  [*libaio_package_name*] - The name of the libaio package.
-#  [*libssl_package_name*] - The name of the libssl package.
-#  [*wsrep_deb_name*]      - The name of wsrep .deb file.
-#  [*galera_deb_name*]     - The name of galera .deb file.
-#  [*wsrep_deb_name*]      - The URL to download the wsrep .deb file.
-#  [*galera_deb_name*]     - The URL to download the galera .deb file.
-#  [*galera_package_name*] - The name of the Galera package.
-#  [*wsrep_package_name*]  - The name of the WSREP package.
 #  [*cluster_name*]        - Logical cluster name. Should be the same for all nodes.
 #  [*master_ip*]           - IP address of the group communication system handle.
 #    The first node in the cluster should be left as the default (false) until the cluster is formed.
@@ -52,12 +44,6 @@ class galera::server (
   $package_ensure      = $mysql::package_ensure,
   $galera_package_name = 'galera',
   $wsrep_package_name  = 'mysql-server-wsrep',
-  $libaio_package_name = 'libaio1',
-  $libssl_package_name = 'libssl0.9.8',
-  $wsrep_deb_name      = 'mysql-server-wsrep-5.5.23-23.6-amd64.deb',
-  $wsrep_deb_source    = 'http://launchpad.net/codership-mysql/5.5/5.5.23-23.6/+download/mysql-server-wsrep-5.5.23-23.6-amd64.deb',
-  $galera_deb_name     = 'galera-23.2.1-amd64.deb',
-  $galera_deb_source   = 'http://launchpad.net/galera/2.x/23.2.1/+download/galera-23.2.1-amd64.deb',
   $wsrep_bind_address  = '0.0.0.0',
   $cluster_name        = 'wsrep',
   $master_ip           = false,
@@ -70,42 +56,14 @@ class galera::server (
 
   create_resources( 'class', $config_class )
 
-  exec { 'download-wsrep':
-    command => "wget -O /tmp/${wsrep_deb_name} ${wsrep_deb_source} --no-check-certificate",
-    path    => '/usr/bin:/usr/sbin:/bin:/sbin',
-    creates => "/tmp/${wsrep_deb_name}",
-  }
-
-  exec { 'download-galera':
-    command => "wget -O /tmp/${galera_deb_name} ${galera_deb_source} --no-check-certificate",
-    path    => '/usr/bin:/usr/sbin:/bin:/sbin',
-    creates => "/tmp/${galera_deb_name}",
-  }
-
   package { 'wsrep':
     ensure   => $package_ensure,
     name     => $wsrep_package_name,
-    provider => 'dpkg',
-    require  => [Exec['download-wsrep'],Package['libaio','libssl']],
-    source   => "/tmp/${wsrep_deb_name}",
   }
 
   package { 'galera':
     ensure   => $package_ensure,
     name     => $galera_package_name,
-    provider => 'dpkg',
-    require  => [Exec['download-galera'],Package['wsrep']],
-    source   => "/tmp/${galera_deb_name}",
-  }
-
-  package { 'libaio' :
-    ensure   => $package_ensure,
-    name     => $libaio_package_name
-  }
-
-  package { 'libssl' :
-    ensure   => $package_ensure,
-    name     => $libssl_package_name
   }
 
   file { '/etc/mysql/conf.d/wsrep.cnf' :
@@ -114,6 +72,7 @@ class galera::server (
     owner   => 'root',
     group   => $root_group,
     content => template('galera/wsrep.cnf.erb'),
+    require => Package[$wsrep_package_name],
     notify  => Service['mysqld']
   }
 
