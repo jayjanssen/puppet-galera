@@ -37,19 +37,20 @@
 #  }
 #
 class galera::server (
-  $config_hash         = {},
-  $enabled             = true,
-  $manage_service      = true,
-  $root_group          = $mysql::root_group,
-  $package_ensure      = $mysql::package_ensure,
-  $galera_package_name = 'galera',
-  $wsrep_package_name  = 'mysql-server-wsrep',
-  $wsrep_bind_address  = '0.0.0.0',
-  $cluster_name        = 'wsrep',
-  $master_ip           = false,
-  $wsrep_sst_username  = 'wsrep_user',
-  $wsrep_sst_password  = 'wsrep_pass',
-  $wsrep_sst_method    = 'mysql_dump'
+  $config_hash               = {},
+  $enabled                   = true,
+  $manage_service            = true,
+  $root_group                = $mysql::root_group,
+  $package_ensure            = $mysql::package_ensure,
+  $galera_package_name       = 'galera',
+  $wsrep_package_name        = 'mysql-server-wsrep',
+  $wsrep_bind_address        = '0.0.0.0',
+  $cluster_name              = 'wsrep',
+  $master_ip                 = false,
+  $wsrep_sst_receive_address = false,
+  $wsrep_sst_username        = 'wsrep_user',
+  $wsrep_sst_password        = 'wsrep_pass',
+  $wsrep_sst_method          = 'mysql_dump'
 ) inherits mysql {
 
   $config_class = { 'mysql::config' => $config_hash }
