@@ -1,0 +1,24 @@
+[mysqld]
+binlog_format                   = ROW
+
+# Recommended Innodb settings for Galera
+innodb_locks_unsafe_for_binlog  = 1
+innodb_autoinc_lock_mode        = 2
+
+wsrep_cluster_name              = <%= @wsrep_cluster_name %>
+wsrep_cluster_address           = <%= @wsrep_cluster_address %>
+
+<% if @wsrep_node_name -%>
+wsrep_node_name    				= <%= @wsrep_node_name %>
+<% end -%>
+<% if @wsrep_node_address -%>
+wsrep_node_address     			= <%= @wsrep_node_address %>
+<% end -%>
+
+wsrep_provider                  = <%= @wsrep_provider %>
+wsrep_provider_options          = <%= @wsrep_provider_options %>
+
+wsrep_slave_threads             = <%= @wsrep_slave_threads %>
+
+wsrep_sst_method                = <%= @wsrep_sst_method %>
+wsrep_sst_auth                  = <%= @wsrep_sst_username %>:<%= @wsrep_sst_password %>

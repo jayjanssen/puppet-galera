@@ -48,7 +48,7 @@ class galera::monitor(
 ) {
 
   # Needed to manage /etc/services
-  include augeas
+  # include augeas
 
   Class['galera::server'] -> Class['galera::monitor']
 

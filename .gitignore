@@ -3,3 +3,5 @@ Gemfile.lock
 vendor
 spec/fixtures/modules
 spec/fixtures/manifests/site.pp
+.librarian
+.tmp
